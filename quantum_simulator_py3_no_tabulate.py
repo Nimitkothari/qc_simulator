@@ -36,6 +36,7 @@ def Rz(angle):
 #################### State functions
 def create_state(num_qubits, list_type, lis):
     state = np.zeros(num_qubits)
+
     # if the list has less entries than amplitudes (2**n),
     # interpret the entries as positions
     #if len(lis) < 2**num_qubits:
@@ -43,7 +44,7 @@ def create_state(num_qubits, list_type, lis):
         # check if all entries are valid positions
         if any(isinstance(item, complex) or item > 2**num_qubits \
                    or not isinstance(item, int) for item in lis) :
-            raise StandardError('Cannot interpret input of State() creator.'\
+            raise ValueError('Cannot interpret input of State() creator.'\
                                     ' Please enter a list of valid positions.')
         # initialise state
         state = np.array([1./sqrt(len(lis)) if i in lis else 0 \
@@ -52,6 +53,9 @@ def create_state(num_qubits, list_type, lis):
     # interpret the entries as amplitudes
     #elif len(lis) == 2**num_qubits:
     elif list_type == "amplitudes":
+        if (len(lis) < 2**num_qubits) or (len(lis) > 2**num_qubits):
+    	       raise ValueError('Cannot interpret the list of amplitudes. '\
+                                        'Please specify 2**num_qubits values.')
         state = np.array(lis)
         if not is_normalised(state):
             state = renormalise(state)
@@ -59,7 +63,7 @@ def create_state(num_qubits, list_type, lis):
                     'automatically ')
 
     else:
-        raise StandardError('Cannot interpret input of State() creator.'\
+        raise ValueError('Cannot interpret input of State() creator.'\
                                 ' Please enter a list of valid amplitudes or positions.')
     return state
 
@@ -146,7 +150,7 @@ def grover_iteration(state, marked_pos):
     # check if list is of desired format
     if any(item > len(state) for item in marked_pos)\
        or any( not isinstance(item, int) for item in marked_pos):
-        raise StandardError('Cannot interpret the list of marked positions'\
+        raise ValueError('Cannot interpret the list of marked positions'\
                                     ' in grover_iteration()')
 
     marked_state = [- el if i in marked_pos else el \
@@ -216,7 +220,7 @@ def project_on_blochsphere(state):
 
         bloch.show()
     else:
-        raise StandardError('Bloch projection is only supported'\
+        raise ValueError('Bloch projection is only supported'\
                                 ' for single qubit states.')
 
 '''
@@ -227,23 +231,23 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
 
     # check if input matrix is a 2x2 matrix
     if (gate_matrix.shape > (2,2)) - (gate_matrix.shape < (2,2)) != 0:
-        raise StandardError('Cannot create total unitary. '\
+        raise ValueError('Cannot create total unitary. '\
                         'Input matrix must be 2x2.')
 
     # check if input matrix is unitary
     if np.allclose(np.linalg.inv(gate_matrix),gate_matrix.conjugate().transpose()) == False:
-        raise StandardError('Cannot create total unitary.'\
+        raise ValueError('Cannot create total unitary.'\
                             ' Input matrix must be unitary.')
 
     if any(item > num_qubits-1 or item < 0 for item in qubit_pos):
-        raise StandardError('Cannot apply quantum gate.'\
+        raise ValueError('Cannot apply quantum gate.'\
                             ' Qubit position is not valid.')
 
     if (len(qubit_pos) == 1):
 
         # check if qubit positions are valid
         if (qubit_pos[0] < 0) or (qubit_pos[0] > num_qubits) :
-            raise StandardError('Your selected qubit position is out of range.'\
+            raise ValueError('Your selected qubit position is out of range.'\
                             ' Please choose a valid qubit position.')
         else:
             # create a list of gates representing the required tensor product
@@ -268,7 +272,7 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
         target = qubit_pos[1]
 
         if control==target:
-            raise StandardError('Target and control are the same. '\
+            raise ValueError('Target and control are the same. '\
                                 'Please choose different target and '\
                                 'control qubits.')
 
@@ -356,7 +360,7 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
 
         # check if input gate is X > only Toffoli allowed for now
         if (gate_matrix==X).all() == False:
-            raise StandardError('Cannot create the controlled controlled U gate. '\
+            raise ValueError('Cannot create the controlled controlled U gate. '\
                                 'Only Toffoli supported so far. '\
                                 'Input matrix must be the X gate.')
 
@@ -379,7 +383,7 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
         return quantum_state
 
     else:
-        raise StandardError('Too many qubits specified.'\
+        raise ValueError('Too many qubits specified.'\
                                 ' Please enter a maximum of 2 valid positions.')
 
     return None
