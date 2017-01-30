@@ -308,10 +308,10 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
 
             # if control position is reached:
             # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
-            cgate += np.kron(np.matrix(create_state(1,[0,1])).transpose()*np.matrix(create_state(1,[0,1])), gate_matrix)
+            cgate += np.kron(np.matrix(create_state(1,'amplitudes',[0,1])).transpose()*np.matrix(create_state(1,'amplitudes',[0,1])), gate_matrix)
 
             # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
-            cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), eye)
+            cgate += np.kron(np.matrix(create_state(1,'amplitudes',[1,0])).transpose()*np.matrix(create_state(1,'amplitudes',[1,0])), eye)
             # convert to array
             cgate = np.array(cgate)
 

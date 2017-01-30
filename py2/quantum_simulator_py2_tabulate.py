@@ -165,6 +165,7 @@ def grover_iteration(state, marked_pos):
     rotated_state = [-el + 2*np.mean(marked_state) for el in marked_state]
     return rotated_state
 
+'''
 def project_on_blochsphere(state):
     if len(state) == 2:
         alpha = state[0]
@@ -228,7 +229,7 @@ def project_on_blochsphere(state):
     else:
         raise StandardError('Bloch projection is only supported'\
                                 ' for single qubit states.')
-
+'''
 #################### Gate functions
 
 def apply_unitary(gate_matrix, qubit_pos, quantum_state):
@@ -295,10 +296,10 @@ def apply_unitary(gate_matrix, qubit_pos, quantum_state):
 
             # if control position is reached:
             # perform the outer product |1><1| and, thereafter, the tensor product with the unitary that shall be controlled
-            cgate += np.kron((np.matrix(create_state(1,[0,1])).transpose())*np.matrix(create_state(1,[0,1])), np.matrix(gate_matrix))
+            cgate += np.kron((np.matrix(create_state(1,'amplitudes',[0,1])).transpose())*np.matrix(create_state(1,'amplitudes',[0,1])), np.matrix(gate_matrix))
 
             # perform the outer product |0><0| and, thereafter, the tensor product with the identity matrix
-            cgate += np.kron(np.matrix(create_state(1,[1,0])).transpose()*np.matrix(create_state(1,[1,0])), np.matrix(eye).astype(np.complex128))
+            cgate += np.kron(np.matrix(create_state(1,'amplitudes',[1,0])).transpose()*np.matrix(create_state(1,'amplitudes',[1,0])), np.matrix(eye).astype(np.complex128))
             # convert to array
             cgate = np.array(cgate)
 
